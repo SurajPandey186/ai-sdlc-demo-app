@@ -72,11 +72,24 @@
       approve.addEventListener('click', () => decide(`/approvals/${invoice.id}/approve`, {}));
       reject.addEventListener('click', () => decide(`/approvals/${invoice.id}/reject`, { reason: reason.value }));
 
+      const approvalProgress = invoice.amount > 500000
+        ? el('p', { class: 'approval-progress' }, highValueApprovalProgress(invoice.approvals || []))
+        : null;
+
       return el('li', {},
         el('span', {}, `${invoice.id} · ${invoice.customerName} · ${money.format(invoice.amount)}`),
+        approvalProgress,
         el('span', {}, approve),
         el('div', { class: 'reject-row' }, reason, reject));
     }));
+  }
+
+  function highValueApprovalProgress(approvals) {
+    if (approvals.length === 0) {
+      return 'High-value approval progress: 0 of 2 approvals recorded. A Manager or Director may provide the first approval; a different Director must provide the second approval.';
+    }
+
+    return `High-value approval progress: 1 of 2 approvals recorded. The first ${approvals[0].authority} approval is pending final approval; a different Director must provide the second approval.`;
   }
 
   async function decide(path, payload) {

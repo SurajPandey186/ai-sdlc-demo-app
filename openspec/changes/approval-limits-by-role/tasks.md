@@ -22,8 +22,8 @@
 
 ## 4. UI test and assignment evidence
 
-- [ ] 4.1 Add a page object and one Playwright test that signs in as the Manager, attempts an over-limit approval through the UI, checks the visible reason, reloads, and confirms the invoice is still pending; verify `npm test` passes from `e2e`.
-- [ ] 4.2 Run the required mutation test after implementation with Stryker 4.13.0 and record the post-feature score alongside the baseline; verify both score outputs are present as text in the write-up.
+- [x] 4.1 Add a page object and one Playwright test that signs in as the Manager, attempts an over-limit approval through the UI, checks the visible reason, reloads, and confirms the invoice is still pending; verify `npm test` passes from `e2e`.
+- [x] 4.2 Run the required mutation test after implementation with Stryker 4.13.0 and record the post-feature score alongside the baseline; verify both score outputs are present as text in the write-up.
 - [ ] 4.3 Push the completed commit sequence to the fork and open a pull request; verify the PR contains at least three independent commits and the expected feature/spec files.
 - [ ] 4.4 Use focused sub-agents and appropriate review skills to inspect generated unit tests and the PR diff; record prompts/findings in the interaction log, assign every finding Fixed, Dismissed with a reason, or Deferred with a reason, and put the complete verdict list in the PR description.
 - [ ] 4.5 Create `ASSIGNMENT.md` with the PR link, commit sequence, spec links, test results, mutation scores, review verdicts, AI interaction log, and demo link; verify every required hand-in item from `Requirement.Doc.txt` is accounted for.

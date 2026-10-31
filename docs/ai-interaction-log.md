@@ -91,3 +91,19 @@ This log summarizes assignment-related AI work. Backfilled entries are concise r
 - Result: Review confirmed high-value invoices remain pending after the first Manager or Director approval; a distinct Director completes the second approval; duplicate-user and non-Director attempts fail before mutation. The dedicated stage-two commit was created with `feat: require distinct director approval for high-value invoices`, separate from stage one.
 - Verification: `dotnet test backend/InvoiceApp.sln` passed all 24 tests; `openspec.cmd validate approval-limits-by-role --strict` passed; `git diff --check` found no whitespace errors (only Git line-ending normalization warnings). `git show --stat --oneline HEAD` confirmed six stage-two Domain/test/checklist/log paths and no UI or assignment paths.
 - Accepted/changed: Task 3.3 was marked complete after verifying the local commit. `Requirement.Doc.txt`, `docs/mutation-baseline.txt`, and placeholder files remain uncommitted; nothing was pushed and no UI or assignment work was added.
+
+## UI and Playwright implementation (task 4.1) - 2026-10-31
+
+- Prompt/goal: Implement only the UI and UI-test portion of OpenSpec group 4: clearly present high-value approval progress, add focused Playwright coverage, and avoid assignment or hand-in work.
+- Agent/tool: Codex assistant; static web UI, Playwright page objects, Chromium, and .NET test runner.
+- Result: Added high-value pending-approval progress that distinguishes zero from one recorded approval and states that a different Director must provide the second approval. Added an accessible page object plus Playwright tests for a Manager's over-limit rejection/reload flow and the first high-value Manager approval progress.
+- Verification: `npm test` in `e2e` passed 2/2 Playwright tests. `dotnet test backend/InvoiceApp.sln` passed 24/24 tests. The tests use only role and label locators, including exact accessible names for invoice actions.
+- Accepted/changed: Marked only OpenSpec task 4.1 complete after verification. No mutation run, PR, review, `ASSIGNMENT.md`, demo, staging, commit, or push was performed. `Requirement.Doc.txt` and `docs/mutation-baseline.txt` were preserved.
+
+## Post-feature mutation evidence (task 4.2) - 2026-10-31
+
+- Prompt/goal: Run the required post-feature Stryker.NET 4.13.0 mutation test and record its score alongside the pre-feature baseline, without beginning PR or hand-in tasks.
+- Agent/tool: Codex assistant; global `dotnet-stryker` 4.13.0 and the InvoiceApp.Tests project.
+- Result: Ran Stryker against the `InvoiceApp.Domain` reference using `dotnet stryker --project InvoiceApp.Domain.csproj`. The initial unscoped command correctly reported two mutable project references; the final targeted run completed against the Domain project containing the approval-limit rules.
+- Verification: The report at `backend/tests/InvoiceApp.Tests/StrykerOutput/2026-10-31.17-59-31/reports/mutation-report.html` records 45 killed, 9 survived, 23 no-coverage, 6 compile-error, and 23 ignored mutants (106 total), for a 58.44% mutation score. `docs/mutation-baseline.txt` now contains both this result and the 30.77% pre-feature baseline.
+- Accepted/changed: Marked only OpenSpec task 4.2 complete after the report was parsed and verified. No PR, review, `ASSIGNMENT.md`, demo, staging, commit, or push was performed. `Requirement.Doc.txt`, `openspec/changes/archive/`, and `openspec/specs/` remain preserved.
