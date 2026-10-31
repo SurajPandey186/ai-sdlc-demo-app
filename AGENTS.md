@@ -32,6 +32,19 @@ Invoice approval demo app: ASP.NET Core 8 Web API with a small static web UI.
 - `demo.approver` / `ChangeMe123!` (role Approver)
 - `demo.admin` / `ChangeMe123!` (role Admin)
 
+## Approval-limit feature rules
+
+- Approval authority is distinct from endpoint access roles:
+  - For a single-approver decision, Managers may approve invoices up to and including 50,000; Directors may approve invoices up to and including 500,000.
+- An invoice above 500,000 requires two approvals from distinct users.
+- For an invoice above 500,000, a Manager or Director may record the first, non-final approval; the invoice remains pending until a different Director records the second approval.
+- The second approval for an invoice above 500,000 must be from a Director.
+- A user must never count as both approvers for the same invoice.
+- A rejected approval attempt must return a clear reason and must not change invoice status, recorded approvals, decision fields, or timestamps.
+- Keep these rules in the Domain project and `ApprovalService`; controllers only pass authenticated-user data and map results.
+- Tests must cover both limits, exact boundaries, distinct approvers, an invalid second approver, and unchanged state after every rejected attempt.
+- Review all AI-generated tests and pull-request findings. Do not accept generated output without checking the rule it proves.
+
 ## Never
 
 - Commit real credentials, tokens or customer data.
