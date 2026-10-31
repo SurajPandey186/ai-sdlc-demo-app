@@ -34,9 +34,25 @@ public class ApprovalService
         EnsurePending(invoice);
         EnsureAuthorityCanApprove(invoice, authority);
 
-        invoice.Status = InvoiceStatus.Approved;
-        invoice.DecidedBy = approver;
-        invoice.DecidedAt = DateTime.UtcNow;
+        var approvedAt = DateTime.UtcNow;
+        var approval = new ApprovalRecord(approver, authority, approvedAt);
+
+        if (invoice.Amount > 500_000m)
+        {
+            RecordHighValueApproval(invoice, approval);
+        }
+        else
+        {
+            if (invoice.Approvals.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    $"Invoice {invoice.Id} already has approval records and cannot be decided with a single approval.");
+            }
+
+            invoice.Approvals.Add(approval);
+            CompleteApproval(invoice, approval);
+        }
+
         _repository.Update(invoice);
         return invoice;
     }
@@ -79,16 +95,48 @@ public class ApprovalService
             throw new InvalidOperationException("A valid Manager or Director approval authority is required.");
         }
 
-        if (invoice.Amount > 500_000m)
-        {
-            throw new InvalidOperationException(
-                $"Invoice {invoice.Id} is above 500,000 and requires the two-approver workflow; a single approval is not permitted.");
-        }
-
-        if (authority == ApprovalAuthority.Manager && invoice.Amount > 50_000m)
+        if (invoice.Amount <= 500_000m && authority == ApprovalAuthority.Manager && invoice.Amount > 50_000m)
         {
             throw new InvalidOperationException(
                 $"Manager authority is limited to invoices up to 50,000; invoice {invoice.Id} exceeds that limit.");
         }
+    }
+
+    private static void RecordHighValueApproval(Invoice invoice, ApprovalRecord approval)
+    {
+        if (invoice.Approvals.Count == 0)
+        {
+            invoice.Approvals.Add(approval);
+            return;
+        }
+
+        if (invoice.Approvals.Count != 1)
+        {
+            throw new InvalidOperationException(
+                $"Invoice {invoice.Id} has an invalid approval history and cannot accept another approval.");
+        }
+
+        var firstApproval = invoice.Approvals[0];
+        if (string.Equals(firstApproval.Username, approval.Username, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"A different user must provide the second approval for invoice {invoice.Id}.");
+        }
+
+        if (approval.Authority != ApprovalAuthority.Director)
+        {
+            throw new InvalidOperationException(
+                $"The second approval for invoice {invoice.Id} must be made by a Director.");
+        }
+
+        invoice.Approvals.Add(approval);
+        CompleteApproval(invoice, approval);
+    }
+
+    private static void CompleteApproval(Invoice invoice, ApprovalRecord finalApproval)
+    {
+        invoice.Status = InvoiceStatus.Approved;
+        invoice.DecidedBy = finalApproval.Username;
+        invoice.DecidedAt = finalApproval.ApprovedAt;
     }
 }

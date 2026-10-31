@@ -75,3 +75,19 @@ This log summarizes assignment-related AI work. Backfilled entries are concise r
 - Result: Review found the Manager/Director limits and role separation in place; single approvals above 500,000 fail closed. No two-approver workflow or approval-history collection was added. The stage-one implementation, tests, checklist, and interaction logging were committed separately with `feat: enforce single-approver approval limits`.
 - Verification: `dotnet test backend/InvoiceApp.sln` passed all 21 tests; `openspec.cmd validate approval-limits-by-role --strict` passed; `git diff --check` found no whitespace errors (only Git's line-ending normalization warning). The commit contains 15 scoped paths and no approval-history model/workflow.
 - Accepted/changed: Task 2.4 was marked complete after verifying the local commit. `Requirement.Doc.txt`, the Stryker baseline, and unrelated placeholder files remain uncommitted; nothing was pushed and no stage-two work was started.
+
+## Stage two implementation (tasks 3.1-3.2) - 2026-10-31
+
+- Prompt/goal: Implement ordered approval records and the high-value two-approver behavior for tasks 3.1-3.2; test eligible first approvals, distinct Director completion, and unchanged state after invalid second approvals, without UI work, staging, or committing.
+- Agent/tool: Codex assistant; OpenSpec apply workflow, .NET 8 Domain service, and xUnit.
+- Result: Added ordered approval records for successful decisions. A Manager or Director can record the first approval above 500,000 while the invoice remains pending and final-decision fields stay unset; a distinct Director can record the second approval and complete it. Duplicate users and non-Director second approvers are rejected before mutation. An initial test run found two obsolete stage-one cases expecting high-value single approvals to be rejected; those cases were updated for the new first-approval path.
+- Verification: After correcting those obsolete expectations, `dotnet test backend/InvoiceApp.sln` passed all 24 tests. New tests cover both first-approver authorities, ordered distinct-Director completion, clear duplicate/non-Director reasons, full invoice-state snapshots including approval history, and unchanged repository update counts for rejected attempts. Strict OpenSpec validation passed; `git diff --check` found no whitespace errors (only line-ending normalization warnings).
+- Accepted/changed: OpenSpec tasks 3.1 and 3.2 were marked complete after test verification. No UI, assignment hand-in, staging, commit, or push was performed; tasks 3.3 and 4.x remain open. `Requirement.Doc.txt` and the Stryker baseline remain untouched.
+
+## Stage two review - 2026-10-31
+
+- Prompt/goal: Review the stage-two implementation against `AGENTS.md` and the OpenSpec spec, run unit tests, strict OpenSpec validation, and `git diff --check`, then commit only stage-two Domain, test, task-checklist, and interaction-log files.
+- Agent/tool: Codex assistant; Git, OpenSpec CLI, and .NET test runner.
+- Result: Review confirmed high-value invoices remain pending after the first Manager or Director approval; a distinct Director completes the second approval; duplicate-user and non-Director attempts fail before mutation. The dedicated stage-two commit was created with `feat: require distinct director approval for high-value invoices`, separate from stage one.
+- Verification: `dotnet test backend/InvoiceApp.sln` passed all 24 tests; `openspec.cmd validate approval-limits-by-role --strict` passed; `git diff --check` found no whitespace errors (only Git line-ending normalization warnings). `git show --stat --oneline HEAD` confirmed six stage-two Domain/test/checklist/log paths and no UI or assignment paths.
+- Accepted/changed: Task 3.3 was marked complete after verifying the local commit. `Requirement.Doc.txt`, `docs/mutation-baseline.txt`, and placeholder files remain uncommitted; nothing was pushed and no UI or assignment work was added.

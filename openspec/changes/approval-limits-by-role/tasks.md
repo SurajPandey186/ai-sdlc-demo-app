@@ -16,9 +16,9 @@
 
 ## 3. Stage two: distinct Director second approval
 
-- [ ] 3.1 Add ordered approval records and implement the high-value first-approval state, preserving `PendingApproval`; verify Manager and Director first approvals are recorded without setting final decision fields.
-- [ ] 3.2 Add tests for a distinct Director completing approval, the same user being rejected as second approver, and a different Manager being rejected as second approver; verify all rejected attempts preserve the invoice and its first-approval record.
-- [ ] 3.3 Update the AI interaction log for this stage and commit the two-approver workflow and its tests separately; verify `dotnet test backend/InvoiceApp.sln` passes and the commit is distinct from stage one.
+- [x] 3.1 Add ordered approval records and implement the high-value first-approval state, preserving `PendingApproval`; verify Manager and Director first approvals are recorded without setting final decision fields.
+- [x] 3.2 Add tests for a distinct Director completing approval, the same user being rejected as second approver, and a different Manager being rejected as second approver; verify all rejected attempts preserve the invoice and its first-approval record.
+- [x] 3.3 Update the AI interaction log for this stage and commit the two-approver workflow and its tests separately; verify `dotnet test backend/InvoiceApp.sln` passes and the commit is distinct from stage one.
 
 ## 4. UI test and assignment evidence
 

@@ -40,6 +40,12 @@ public class ApprovalServiceTests
         Assert.Equal(InvoiceStatus.Approved, result.Status);
         Assert.Equal("demo.approver", result.DecidedBy);
         Assert.NotNull(result.DecidedAt);
+        Assert.Collection(result.Approvals,
+            approval =>
+            {
+                Assert.Equal("demo.approver", approval.Username);
+                Assert.Equal(ApprovalAuthority.Manager, approval.Authority);
+            });
     }
 
     [Fact]
@@ -95,8 +101,6 @@ public class ApprovalServiceTests
     [Theory]
     [InlineData("50000.01", ApprovalAuthority.Manager, "50,000")]
     [InlineData("500000", ApprovalAuthority.Manager, "50,000")]
-    [InlineData("500000.01", ApprovalAuthority.Manager, "two-approver")]
-    [InlineData("500000.01", ApprovalAuthority.Director, "two-approver")]
     public void Approve_RejectsOverLimitWithoutChangingInvoiceOrRepository(
         string amountText,
         ApprovalAuthority authority,
@@ -114,6 +118,86 @@ public class ApprovalServiceTests
         Assert.Contains(expectedReason, exception.Message, StringComparison.OrdinalIgnoreCase);
         Assert.Equal(originalState, Capture(invoice));
         Assert.Equal(0, repository.UpdateCount);
+    }
+
+    [Theory]
+    [InlineData("manager-one", ApprovalAuthority.Manager)]
+    [InlineData("director-one", ApprovalAuthority.Director)]
+    public void Approve_FirstHighValueApprovalRecordsNonFinalApproval(
+        string username,
+        ApprovalAuthority authority)
+    {
+        var invoice = InvoiceWith("INV-HIGH-VALUE", InvoiceStatus.PendingApproval, 500_000.01m);
+        var repository = new FakeInvoiceRepository(invoice);
+        var service = new ApprovalService(repository);
+
+        var result = service.Approve(invoice.Id, username, authority);
+
+        Assert.Equal(InvoiceStatus.PendingApproval, result.Status);
+        var firstApproval = Assert.Single(result.Approvals);
+        Assert.Equal(username, firstApproval.Username);
+        Assert.Equal(authority, firstApproval.Authority);
+        Assert.NotEqual(default, firstApproval.ApprovedAt);
+        Assert.Null(result.DecidedBy);
+        Assert.Null(result.DecidedAt);
+        Assert.Equal(1, repository.UpdateCount);
+    }
+
+    [Fact]
+    public void Approve_DistinctDirectorCompletesHighValueInvoiceInApprovalOrder()
+    {
+        var invoice = InvoiceWith("INV-HIGH-VALUE", InvoiceStatus.PendingApproval, 500_000.01m);
+        var repository = new FakeInvoiceRepository(invoice);
+        var service = new ApprovalService(repository);
+        service.Approve(invoice.Id, "manager-one", ApprovalAuthority.Manager);
+        var firstApproval = Assert.Single(invoice.Approvals);
+
+        var result = service.Approve(invoice.Id, "director-two", ApprovalAuthority.Director);
+
+        Assert.Equal(InvoiceStatus.Approved, result.Status);
+        Assert.Equal(2, result.Approvals.Count);
+        Assert.Equal(firstApproval, result.Approvals[0]);
+        Assert.Equal("director-two", result.Approvals[1].Username);
+        Assert.Equal(ApprovalAuthority.Director, result.Approvals[1].Authority);
+        Assert.Equal("director-two", result.DecidedBy);
+        Assert.Equal(result.Approvals[1].ApprovedAt, result.DecidedAt);
+        Assert.Equal(2, repository.UpdateCount);
+    }
+
+    [Fact]
+    public void Approve_RejectsSameUserAsSecondApproverWithoutChangingHighValueInvoice()
+    {
+        var invoice = InvoiceWith("INV-HIGH-VALUE", InvoiceStatus.PendingApproval, 500_000.01m);
+        var repository = new FakeInvoiceRepository(invoice);
+        var service = new ApprovalService(repository);
+        service.Approve(invoice.Id, "manager-one", ApprovalAuthority.Manager);
+        var originalState = Capture(invoice);
+        var originalUpdateCount = repository.UpdateCount;
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => service.Approve(invoice.Id, "manager-one", ApprovalAuthority.Manager));
+
+        Assert.Contains("different user", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(originalState, Capture(invoice));
+        Assert.Equal(originalUpdateCount, repository.UpdateCount);
+    }
+
+    [Fact]
+    public void Approve_RejectsDifferentManagerAsSecondApproverWithoutChangingHighValueInvoice()
+    {
+        var invoice = InvoiceWith("INV-HIGH-VALUE", InvoiceStatus.PendingApproval, 500_000.01m);
+        var repository = new FakeInvoiceRepository(invoice);
+        var service = new ApprovalService(repository);
+        service.Approve(invoice.Id, "manager-one", ApprovalAuthority.Manager);
+        var originalState = Capture(invoice);
+        var originalUpdateCount = repository.UpdateCount;
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => service.Approve(invoice.Id, "manager-two", ApprovalAuthority.Manager));
+
+        Assert.Contains("Director", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(originalState, Capture(invoice));
+        Assert.Equal(originalUpdateCount, repository.UpdateCount);
     }
 
     private static string Capture(Invoice invoice) => JsonSerializer.Serialize(invoice);
