@@ -31,7 +31,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { error = "Invalid username or password." });
         }
 
-        var token = _sessions.Create(new UserSession(user.Username, user.Role));
+        var token = _sessions.Create(new UserSession(user.Username, user.Role, user.ApprovalAuthority));
         return Ok(new LoginResponse(token, user.Username, user.Role));
     }
 

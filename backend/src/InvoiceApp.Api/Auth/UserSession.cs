@@ -1,12 +1,15 @@
+using InvoiceApp.Domain;
+
 namespace InvoiceApp.Api.Auth;
 
-public record UserSession(string Username, string Role);
+public record UserSession(string Username, string Role, ApprovalAuthority ApprovalAuthority);
 
 public class DemoUser
 {
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+    public ApprovalAuthority ApprovalAuthority { get; set; }
 }
 
 public class DemoUsersOptions

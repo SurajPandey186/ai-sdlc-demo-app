@@ -2,7 +2,7 @@ namespace InvoiceApp.Domain;
 
 /// <summary>
 /// Moves an invoice through its lifecycle: Draft -> PendingApproval -> Approved or Rejected.
-/// One invoice at a time, decided as a whole by a single approver.
+/// One invoice at a time, enforcing the authority limits for single-approver decisions.
 /// </summary>
 public class ApprovalService
 {
@@ -28,10 +28,11 @@ public class ApprovalService
         return invoice;
     }
 
-    public Invoice Approve(string invoiceId, string approver)
+    public Invoice Approve(string invoiceId, string approver, ApprovalAuthority authority)
     {
         var invoice = Find(invoiceId);
         EnsurePending(invoice);
+        EnsureAuthorityCanApprove(invoice, authority);
 
         invoice.Status = InvoiceStatus.Approved;
         invoice.DecidedBy = approver;
@@ -68,6 +69,26 @@ public class ApprovalService
         {
             throw new InvalidOperationException(
                 $"Invoice {invoice.Id} is {invoice.Status}; only pending invoices can be decided.");
+        }
+    }
+
+    private static void EnsureAuthorityCanApprove(Invoice invoice, ApprovalAuthority authority)
+    {
+        if (authority is not ApprovalAuthority.Manager and not ApprovalAuthority.Director)
+        {
+            throw new InvalidOperationException("A valid Manager or Director approval authority is required.");
+        }
+
+        if (invoice.Amount > 500_000m)
+        {
+            throw new InvalidOperationException(
+                $"Invoice {invoice.Id} is above 500,000 and requires the two-approver workflow; a single approval is not permitted.");
+        }
+
+        if (authority == ApprovalAuthority.Manager && invoice.Amount > 50_000m)
+        {
+            throw new InvalidOperationException(
+                $"Manager authority is limited to invoices up to 50,000; invoice {invoice.Id} exceeds that limit.");
         }
     }
 }

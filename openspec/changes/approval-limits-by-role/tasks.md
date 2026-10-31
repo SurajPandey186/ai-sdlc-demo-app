@@ -2,17 +2,17 @@
 
 ## 1. Context and specification baseline
 
-- [ ] 1.1 Fork the reference repository and create a feature branch; verify `git remote -v` points to the user's fork and `git status` shows the working tree before feature implementation.
-- [ ] 1.2 Commit the updated `AGENTS.md` and OpenSpec artifacts as a documentation-only commit; verify with `git show --stat --oneline HEAD` that it contains the guidance and proposal files but no application code.
-- [ ] 1.3 Configure a supported agent hook to capture structured AI interaction records in a consistent format in `docs/ai-interaction-log.md`; verify at least one generated entry matches the agreed format.
-- [ ] 1.4 Install/use `dotnet-stryker` version 4.13.0 and capture the pre-feature mutation score; verify the baseline output is saved as text for `ASSIGNMENT.md`.
+- [x] 1.1 Fork the reference repository and create a feature branch; verify `git remote -v` points to the user's fork and `git status` shows the working tree before feature implementation.
+- [x] 1.2 Commit the updated `AGENTS.md` and OpenSpec artifacts as a documentation-only commit; verify with `git show --stat --oneline HEAD` that it contains the guidance and proposal files but no application code.
+- [x] 1.3 Configure a supported agent hook to capture structured AI interaction records in a consistent format in `docs/ai-interaction-log.md`; verify at least one generated entry matches the agreed format.
+- [x] 1.4 Install/use `dotnet-stryker` version 4.13.0 and capture the pre-feature mutation score; verify the baseline output is saved as text for `ASSIGNMENT.md`.
 
 ## 2. Stage one: single-approver authority limits
 
-- [ ] 2.1 Add Manager/Director approval authority separately from the existing Approver/Admin access role, configure the demo mappings, and pass the authority through the authenticated session; verify the API still enforces existing access roles and tests confirm each demo authority mapping.
-- [ ] 2.2 Enforce single-approver limits in the Domain service and add boundary tests for Manager at 50,000, Manager above 50,000 through 500,000, and Director at 500,000; verify `dotnet test backend/InvoiceApp.sln` passes.
-- [ ] 2.3 Add rejection tests that snapshot status, approval records, decision fields, timestamps, and repository update behavior; verify rejected over-limit calls return a clear reason and leave every snapshotted value unchanged.
-- [ ] 2.4 Update the AI interaction log for this implementation stage and commit the single-approver implementation and its tests separately; verify the commit contains no two-approver workflow and the full unit test command passes.
+- [x] 2.1 Add Manager/Director approval authority separately from the existing Approver/Admin access role, configure the demo mappings, and pass the authority through the authenticated session; verify the API still enforces existing access roles and tests confirm each demo authority mapping.
+- [x] 2.2 Enforce single-approver limits in the Domain service and add boundary tests for Manager at 50,000, Manager above 50,000 through 500,000, and Director at 500,000; verify `dotnet test backend/InvoiceApp.sln` passes.
+- [x] 2.3 Add rejection tests that snapshot status, approval records, decision fields, timestamps, and repository update behavior; verify rejected over-limit calls return a clear reason and leave every snapshotted value unchanged.
+- [x] 2.4 Update the AI interaction log for this implementation stage and commit the single-approver implementation and its tests separately; verify the commit contains no two-approver workflow and the full unit test command passes.
 
 ## 3. Stage two: distinct Director second approval
 
