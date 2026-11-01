@@ -107,3 +107,11 @@ This log summarizes assignment-related AI work. Backfilled entries are concise r
 - Result: Ran Stryker against the `InvoiceApp.Domain` reference using `dotnet stryker --project InvoiceApp.Domain.csproj`. The initial unscoped command correctly reported two mutable project references; the final targeted run completed against the Domain project containing the approval-limit rules.
 - Verification: The report at `backend/tests/InvoiceApp.Tests/StrykerOutput/2026-10-31.17-59-31/reports/mutation-report.html` records 45 killed, 9 survived, 23 no-coverage, 6 compile-error, and 23 ignored mutants (106 total), for a 58.44% mutation score. `docs/mutation-baseline.txt` now contains both this result and the 30.77% pre-feature baseline.
 - Accepted/changed: Marked only OpenSpec task 4.2 complete after the report was parsed and verified. No PR, review, `ASSIGNMENT.md`, demo, staging, commit, or push was performed. `Requirement.Doc.txt`, `openspec/changes/archive/`, and `openspec/specs/` remain preserved.
+
+## Pull request publication (task 4.3) - 2026-11-01
+
+- Prompt/goal: Push the completed commit sequence to the fork and open a pull request, with no review, hand-in, or demo work.
+- Agent/tool: Codex assistant; Git, GitHub REST read-only verification, and the user's GitHub pull-request creation.
+- Result: Pushed `feature/approval-limits` through `b5692cc` to the fork. The upstream repository restricts PR creation to collaborators, so the user opened the PR within their fork instead.
+- Verification: [PR #1](https://github.com/SurajPandey186/ai-sdlc-demo-app/pull/1) is open from `feature/approval-limits` into the fork's `main` branch and contains four commits, including the specification, staged implementation, UI/Playwright, and mutation-evidence work.
+- Accepted/changed: Marked only OpenSpec task 4.3 complete after verifying the PR metadata. PR review verdicts, `ASSIGNMENT.md` in the repository root, demo verification, staging, committing, and pushing the task-4.3 documentation update remain pending.
