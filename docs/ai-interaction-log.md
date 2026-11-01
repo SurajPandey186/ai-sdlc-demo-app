@@ -115,3 +115,18 @@ This log summarizes assignment-related AI work. Backfilled entries are concise r
 - Result: Pushed `feature/approval-limits` through `b5692cc` to the fork. The upstream repository restricts PR creation to collaborators, so the user opened the PR within their fork instead.
 - Verification: [PR #1](https://github.com/SurajPandey186/ai-sdlc-demo-app/pull/1) is open from `feature/approval-limits` into the fork's `main` branch and contains four commits, including the specification, staged implementation, UI/Playwright, and mutation-evidence work.
 - Accepted/changed: Marked only OpenSpec task 4.3 complete after verifying the PR metadata. PR review verdicts, `ASSIGNMENT.md` in the repository root, demo verification, staging, committing, and pushing the task-4.3 documentation update remain pending.
+
+## PR review and submission summary (tasks 4.4–4.5) - 2026-11-01
+
+- Prompt/goal: Review PR #1 with focused agents, record a verdict for every finding, update the PR description, and create the repository-root submission summary.
+- Agent/tool: Three focused Codex subagents reviewed the approval-domain/unit-test diff, UI/Playwright diff, and assignment-evidence completeness; GitHub REST updated the PR description.
+- Findings/verdicts: Domain/unit-test review found no concrete defect (Dismissed: required boundaries and no-mutation rules are covered). UI/Playwright review found no concrete defect (Dismissed: UI has no approval logic and accessible locators are used). Missing PR verdict list (Fixed: added to PR description). Missing root `ASSIGNMENT.md` (Fixed: added). Video duration is 5:54 rather than 8–10 minutes (Deferred: user must upload a compliant replacement before finalization).
+- Verification: [PR #1](https://github.com/SurajPandey186/ai-sdlc-demo-app/pull/1) now contains the verdict table. `ASSIGNMENT.md` includes the PR link, commits, OpenSpec links, test results, mutation scores, review verdicts, AI-log link, and current video link/status.
+- Accepted/changed: Marked tasks 4.4 and 4.5 complete. Task 4.6 remains open until an accessible 8–10 minute replacement video is linked; final validation remains task 4.7.
+
+## Final technical validation (task 4.7) - 2026-11-01
+
+- Prompt/goal: Run the final unit, Playwright, and OpenSpec validation checks before finalizing the PR.
+- Agent/tool: Codex assistant; .NET test runner, Playwright Chromium suite, and OpenSpec CLI.
+- Verification: `dotnet test backend/InvoiceApp.sln` passed 24/24 tests; `npm test` in `e2e` passed 2/2 tests; `openspec.cmd validate approval-limits-by-role --strict` reported the change valid.
+- Accepted/changed: Marked task 4.7 complete. The only remaining task is 4.6: replace the 5:54 video with an accessible 8–10 minute recording, then update its URL/status in `ASSIGNMENT.md` and PR #1.
