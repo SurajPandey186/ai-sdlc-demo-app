@@ -1,0 +1,18 @@
+Pre-feature mutation-testing baseline
+Date: 2026-10-31
+Stryker version: 4.13.0
+Score: 30.77%
+Mutants: 12 killed, 10 survived, 17 no coverage, 12 ignored (51 total)
+Report: backend/tests/InvoiceApp.Tests/StrykerOutput/2026-10-31.16-54-49/reports/mutation-report.html
+
+This is the baseline before implementing the approval-limit feature. Include this result in ASSIGNMENT.md alongside the post-feature mutation score.
+
+Post-feature mutation-testing result
+Date: 2026-10-31
+Stryker version: 4.13.0
+Command: dotnet stryker --project InvoiceApp.Domain.csproj (from backend/tests/InvoiceApp.Tests)
+Score: 58.44%
+Mutants: 45 killed, 9 survived, 23 no coverage, 6 compile errors, 23 ignored (106 total)
+Report: backend/tests/InvoiceApp.Tests/StrykerOutput/2026-10-31.17-59-31/reports/mutation-report.html
+
+The score uses Stryker's valid-mutant calculation: killed mutants divided by killed, survived, and no-coverage mutants. This post-feature run targets InvoiceApp.Domain, where the approval-limit rules live.
